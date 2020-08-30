@@ -25,10 +25,14 @@ jlink {
 }
 
 dependencies{
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.838')
+    implementation 'com.amazonaws:aws-java-sdk-lex'
     implementation 'org.kordamp.ikonli:ikonli-javafx:11.5.0'
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.kordamp.ikonli:ikonli-feather-pack:11.5.0'
     implementation 'io.github.typhon0:AnimateFX:1.2.1'
+    compile 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    compile 'com.googlecode.soundlibs:jlayer:1.0.1.4'
 
 
 }
