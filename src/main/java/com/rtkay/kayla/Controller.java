@@ -4,40 +4,50 @@ import animatefx.animation.RotateIn;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.collections.ObservableList;
+import com.jfoenix.controls.JFXTextField;
+import com.rtkay.audio.StreamMicAudio;
+import com.rtkay.bot.KaylaEngine;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static com.rtkay.Launcher.cachingClassLoader;
+import static com.rtkay.bot.KaylaEngine.getTextResult;
 
 public class Controller implements Initializable {
     @FXML
-    private StackPane rootStackPane;
+    private ScrollPane scrollPane;
     @FXML
-    private Label label;
+    private VBox chatBox;
+    @FXML
+    private JFXTextField txtUserInput;
+    @FXML
+    private JFXButton btnNotifications;
+    @FXML
+    private StackPane rootStackPane;
+
+    private Service<Void> postContentThread;
     private JFXDialog listeningDialog;
 
-    public void initialize() {
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-       // label.setText("Hello, JavaFX " + javafxVersion + "\nRunning on Java " + javaVersion + ".");
-    }
 
     public void startListening(MouseEvent mouseEvent) throws IOException {
-        URL resource = getClass().getResource( "/com/rtkay/dialogs/listening_dialog.fxml");
+        URL resource = getClass().getResource("/com/rtkay/dialogs/listening_dialog.fxml");
         FXMLLoader loader = new FXMLLoader(resource);
         loader.setClassLoader(cachingClassLoader);
         GridPane root = loader.load();
@@ -45,34 +55,91 @@ public class Controller implements Initializable {
         AnchorPane loadingArcs = (AnchorPane) node.getChildren().get(0);
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(root);
-        listeningDialog = new JFXDialog(rootStackPane,content, JFXDialog.DialogTransition.CENTER);
+        listeningDialog = new JFXDialog(rootStackPane, content, JFXDialog.DialogTransition.TOP);
         JFXButton button = new JFXButton("Close");
-        button.setOnAction(event->{
+        button.setOnAction(event -> {
             listeningDialog.close();
         });
+        listeningDialog.setEffect(null);
         listeningDialog.show();
-        new RotateIn(loadingArcs).setCycleCount(1000).play(); //just testing, will bind this to the actual listening/audio stream
+        final StreamMicAudio audioSession = new StreamMicAudio();
+        postContentThread = new Service<>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() throws LineUnavailableException {
+                        KaylaEngine.sendVoice(audioSession.getStreamFromMic());
+                        return null;
+                    }
+                };
+            }
+        };
+        postContentThread.setOnRunning(event -> {
+            new RotateIn(loadingArcs).setCycleCount(1000).play(); //just set a high number for this, havent found a way to bind the actual data
+        });
 
+        audioSession.setDialog(listeningDialog);
+
+
+        //bind the sent message property to the UI
+        /*
+         *node.textProperty().bind(postTextThread.messageProperty)
+         * */
+
+        postContentThread.restart();
 
     }
 
+    private void initFocus() {
+        final BooleanProperty firstTime = new SimpleBooleanProperty(true); // Variable to store the focus on stage load
+        btnNotifications.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue && firstTime.get()) {
+                rootStackPane.requestFocus(); // Delegate the focus to container
+                firstTime.setValue(false); // Variable value changed for future references
+            }
+        });
+    }
 
 
     public void sendText(ActionEvent actionEvent) {
+        String content = txtUserInput.getText();
+        postContentThread = new Service<>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() {
+                        if (!content.isEmpty()) {
+                            KaylaEngine.sendText(content);
+                            updateMessage(getTextResult().getMessage());
+                        }
+                        return null;
+                    }
+                };
+            }
+        };
+        txtUserInput.clear();
+        postContentThread.setOnSucceeded(event -> {
+            //node.textProperty().unbind();
+        });
+        //bind the sent message property to the UI
+        /*
+         *node.textProperty().bind(postTextThread.messageProperty)
+         * */
+        postContentThread.restart();
+
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+//        scrollPane.vvalueProperty().bind(chatBox.heightProperty());
+        setFocusToRootContainer();
+        KaylaEngine.BuildKayla();
     }
 
-
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-                return node;
-            }
-        }
-        return null;
+    private void setFocusToRootContainer() {
+        initFocus();
     }
+
 }
