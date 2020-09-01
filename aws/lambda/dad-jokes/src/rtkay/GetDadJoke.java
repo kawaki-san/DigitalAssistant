@@ -4,12 +4,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rtkay.lex.DialogAction;
-import com.rtkay.lex.LexQuery;
-import com.rtkay.lex.LexRespond;
-import com.rtkay.lex.Message;
-import com.rtkay.model.Joke;
-import com.rtkay.model.JokeList;
+import rtkay.lex.DialogAction;
+import rtkay.lex.LexQuery;
+import rtkay.lex.LexRespond;
+import rtkay.lex.Message;
+import rtkay.model.Joke;
+import rtkay.model.JokeList;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
-import static com.rtkay.lex.LexQueryFactory.createLexQuery;
+import static rtkay.lex.LexQueryFactory.createLexQuery;
 
 public class GetDadJoke implements RequestHandler<Map<String, Object>, Object> {
     private static final String BASE_URL = "https://icanhazdadjoke.com/";

@@ -1,7 +1,7 @@
 package rtkay;
 
-import com.rtkay.model.Joke;
-import com.rtkay.model.JokeList;
+import rtkay.model.Joke;
+import rtkay.model.JokeList;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
