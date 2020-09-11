@@ -56,6 +56,7 @@ public class Bubble extends HBox {
         time.setAlignment(Pos.BASELINE_RIGHT);
         Label label = new Label("13:05");
         label.setFont(new Font("Inter V", 12));
+        label.setVisible(false);
         time.getChildren().add(label);
         vBox.getChildren().add(time);
         directionIndicator.setContent("M10 0 L0 10 L0 0 Z");
