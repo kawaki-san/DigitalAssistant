@@ -21,8 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -34,6 +32,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static com.rtkay.Launcher.cachingClassLoader;
+import static com.rtkay.bot.KaylaEngine.getContentResult;
 import static com.rtkay.bot.KaylaEngine.getTextResult;
 
 public class Controller implements Initializable {
@@ -85,7 +84,10 @@ public class Controller implements Initializable {
         postContentThread.setOnRunning(event -> {
             new RotateIn(loadingArcs).setCycleCount(1000).play(); //just set a high number for this, havent found a way to bind the actual data
         });
-
+        postContentThread.setOnSucceeded(event -> {
+            speechBubbles.add(new Bubble(getContentResult().getInputTranscript(), SpeechDirection.RIGHT));
+            speechBubbles.add(new Bubble(getContentResult().getMessage(), SpeechDirection.LEFT));
+        });
         audioSession.setDialog(listeningDialog);
 
 
@@ -142,14 +144,26 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        scrollPane.vvalueProperty().bind(chatBox.heightProperty());
         setFocusToRootContainer();
         KaylaEngine.BuildKayla();
         initUI();
+        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.RIGHT));
+
+        for (int i = 0; i <100 ; i++) {
+            if(i%2==0){
+                speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce rhoncus quam mauris, a gravida enim tincidunt sit amet. ", SpeechDirection.RIGHT));
+
+            } else {
+                speechBubbles.add(new Bubble("In vel metus nec velit fermentum accumsan. Nulla aliquam nulla eu lectus molestie ullamcorper. Etiam ut eros eu augue tristique ultrices. Curabitur sit amet quam dignissim, tincidunt nisi nec, egestas eros. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.", SpeechDirection.LEFT));
+            }
+        }
+        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.LEFT));
+
+
     }
 
     private void initUI() {
-        chatBox.setSpacing(5);
+        chatBox.setSpacing(10);
         Bindings.bindContentBidirectional(speechBubbles, chatBox.getChildren());
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
