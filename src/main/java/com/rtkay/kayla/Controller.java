@@ -7,20 +7,26 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
 import com.rtkay.audio.StreamMicAudio;
 import com.rtkay.bot.KaylaEngine;
+import com.rtkay.utils.Bubble;
+import com.rtkay.utils.SpeechDirection;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -44,6 +50,7 @@ public class Controller implements Initializable {
 
     private Service<Void> postContentThread;
     private JFXDialog listeningDialog;
+    private ObservableList<Node> speechBubbles = FXCollections.observableArrayList();
 
 
     public void startListening(MouseEvent mouseEvent) throws IOException {
@@ -120,7 +127,9 @@ public class Controller implements Initializable {
             }
         };
         txtUserInput.clear();
+        speechBubbles.add(new Bubble(content, SpeechDirection.RIGHT));
         postContentThread.setOnSucceeded(event -> {
+            speechBubbles.add(new Bubble(getTextResult().getMessage(), SpeechDirection.LEFT));
             //node.textProperty().unbind();
         });
         //bind the sent message property to the UI
@@ -136,6 +145,24 @@ public class Controller implements Initializable {
 //        scrollPane.vvalueProperty().bind(chatBox.heightProperty());
         setFocusToRootContainer();
         KaylaEngine.BuildKayla();
+        initUI();
+    }
+
+    private void initUI() {
+        chatBox.setSpacing(5);
+        Bindings.bindContentBidirectional(speechBubbles, chatBox.getChildren());
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.prefWidthProperty().bind(chatBox.prefWidthProperty().subtract(5));
+        scrollPane.setFitToWidth(true);
+        //Make the scroller scroll to the bottom when a new message is added
+        speechBubbles.addListener((ListChangeListener<Node>) change -> {
+            while (change.next()) {
+                if(change.wasAdded()){
+                    scrollPane.setVvalue(scrollPane.getVmax());
+                }
+            }
+        });
     }
 
     private void setFocusToRootContainer() {

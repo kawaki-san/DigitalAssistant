@@ -1,6 +1,11 @@
+@font-face {
+    src: url("fonts/Inter-V.ttf");
+}
+
 .root {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-font-family: "Inter V";
 }
 
 .jfx-button {
