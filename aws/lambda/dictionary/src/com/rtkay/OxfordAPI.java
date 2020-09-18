@@ -8,7 +8,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Path;
 
 public interface OxfordAPI {
-
+//Add your app key and app id here
     @Headers({"Accept: application/json", "app_id: ", "app_key: "})
     @GET("entries/{source_lang}/{word_id}")
     Call<EntryResult> getDefinition(@Path("source_lang") String source_lang, @Path("word_id") String lowerCaseWord);
