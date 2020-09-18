@@ -147,7 +147,7 @@ public class Controller implements Initializable {
         setFocusToRootContainer();
         KaylaEngine.BuildKayla();
         initUI();
-      /*  speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.RIGHT));
+/*        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.RIGHT));
 
         for (int i = 0; i <100 ; i++) {
             if(i%2==0){
@@ -157,7 +157,7 @@ public class Controller implements Initializable {
                 speechBubbles.add(new Bubble("In vel metus nec velit fermentum accumsan. Nulla aliquam nulla eu lectus molestie ullamcorper. Etiam ut eros eu augue tristique ultrices. Curabitur sit amet quam dignissim, tincidunt nisi nec, egestas eros. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.", SpeechDirection.LEFT));
             }
         }
-        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.LEFT));*/
+        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.CENTRE));*/
 
 
     }

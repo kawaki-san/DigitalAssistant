@@ -17,6 +17,8 @@ public class Bubble extends HBox {
     private SpeechDirection direction;
     private Label displayedText;
     private SVGPath directionIndicator;
+    private DropShadow dropShadow = new DropShadow();
+
 
     public Bubble(String message, SpeechDirection direction) {
         this.message = message;
@@ -33,6 +35,10 @@ public class Bubble extends HBox {
     }
 
     private void setupElements() {
+        dropShadow.setRadius(2.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
         displayedText = new Label(message);
         displayedText.setMinHeight(Region.USE_PREF_SIZE);
         displayedText.setWrapText(true);
@@ -41,8 +47,10 @@ public class Bubble extends HBox {
         directionIndicator = new SVGPath();
         if (direction == SpeechDirection.LEFT) {
             configureForReceiver();
-        } else {
+        } else if(direction== SpeechDirection.RIGHT) {
             configureForSender();
+        } else {
+            configureNewDate();
         }
     }
 
@@ -56,16 +64,10 @@ public class Bubble extends HBox {
         time.setAlignment(Pos.BASELINE_RIGHT);
         Label label = new Label("13:05");
         label.setFont(new Font("Inter V", 12));
-        label.setVisible(false);
         time.getChildren().add(label);
         vBox.getChildren().add(time);
         directionIndicator.setContent("M10 0 L0 10 L0 0 Z");
         directionIndicator.setFill(DEFAULT_SENDER_COLOR);
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(2.0);
-        dropShadow.setOffsetX(3.0);
-        dropShadow.setOffsetY(3.0);
-        dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
         HBox container = new HBox(vBox, directionIndicator);
         //Use at most 75% of the width provided to the SpeechBox for displaying the message
         container.maxWidthProperty().bind(widthProperty().multiply(0.75));
@@ -75,15 +77,21 @@ public class Bubble extends HBox {
     }
 
     private void configureForReceiver() {
-       displayedText.setBackground(DEFAULT_RECEIVER_BACKGROUND);
+        displayedText.setBackground(DEFAULT_RECEIVER_BACKGROUND);
         displayedText.setAlignment(Pos.CENTER_LEFT);
         directionIndicator.setContent("M0 0 L10 0 L10 10 Z");
         directionIndicator.setFill(DEFAULT_RECEIVER_COLOR);
-
         HBox container = new HBox(directionIndicator, displayedText);
         //Use at most 75% of the width provided to the SpeechBox for displaying the message
         container.maxWidthProperty().bind(widthProperty().multiply(0.75));
         getChildren().setAll(container);
         setAlignment(Pos.CENTER_LEFT);
+    }
+    private void configureNewDate(){
+        displayedText.setAlignment(Pos.CENTER);
+        HBox container = new HBox(displayedText);
+        container.maxWidthProperty().bind(widthProperty().multiply(0.75));
+        getChildren().setAll(container);
+        setAlignment(Pos.CENTER);
     }
 }

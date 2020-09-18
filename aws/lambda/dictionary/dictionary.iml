@@ -7,12 +7,12 @@
     </content>
     <orderEntry type="jdk" jdkName="11" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="com.squareup.retrofit2:retrofit:2.1.0" level="project" />
     <orderEntry type="library" exported="" name="com.amazonaws:aws-java-sdk-lambda:1.11.858" level="project" />
     <orderEntry type="library" exported="" name="com.amazonaws:aws-lambda-java-core:1.2.1" level="project" />
-    <orderEntry type="library" exported="" name="com.squareup.retrofit2:converter-gson:2.1.0" level="project" />
     <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.6" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.okhttp3:okhttp:3.3.1" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.8.0" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.retrofit2:converter-gson:2.1.0" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.retrofit2:retrofit:2.1.0" level="project" />
   </component>
 </module>

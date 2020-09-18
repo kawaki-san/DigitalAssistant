@@ -1,5 +1,5 @@
 package com.rtkay.utils;
 
 public enum SpeechDirection {
-    LEFT, RIGHT
+    LEFT, RIGHT, CENTRE
 }

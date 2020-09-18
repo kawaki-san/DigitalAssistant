@@ -54,7 +54,7 @@ Configure your bot information as required. Then test your bot.
 ### Amazon Lex side
 ####Create a slot type
 
-Back in Amazon Lex. In `Slot types` create a slot type and name it `JokeSubject`. Under `Slot Resolution` , leave it on `Expand Results` and leave sample values. I had "cars", "houses", "apples" as sample values. 
+Back in Amazon Lex. In `Slot types` create a slot type and name it `JokeSubject`. Under `Slot Resolution` , leave it on `Expand Results` and leave sample values. I had "cars", "houses", "apples" as sample values. Alternatively, you can just make a new slot of `AMAZON.Alphanumeric` and try with that.
 
 ####Create an intent
 Create an Intent in your bot. Name it `TellAJoke`. For sample utterances, you can have:
