@@ -2,7 +2,8 @@
 
 Kayla is a JavaFX digital assistant powered by Amazon Lex. We'll use Java modules to give her functionality of different tasks. We'll then deploy these to AWS Lambda which has a connection to our bot and we can then call and execute these functions through Kayla.
 
-[![Kayla.png](https://i.postimg.cc/CdTqn3my/Kayla.png)](https://postimg.cc/FkpR2nMG)
+[![Screenshot-20201114-155948.png](https://i.postimg.cc/02s1cZg6/Screenshot-20201114-155948.png)](https://postimg.cc/s1wL2Ygy)
+
 ## Usage
 You need an AWS account. Set up a bot in Amazon Lex. Configure your bot as needed in the `KaylaEngine` class. Namely: 
 
