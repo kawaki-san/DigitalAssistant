@@ -24,7 +24,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -32,8 +35,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static com.rtkay.Launcher.cachingClassLoader;
-import static com.rtkay.bot.KaylaEngine.getContentResult;
-import static com.rtkay.bot.KaylaEngine.getTextResult;
 
 public class Controller implements Initializable {
     @FXML
@@ -46,7 +47,7 @@ public class Controller implements Initializable {
     private JFXButton btnNotifications;
     @FXML
     private StackPane rootStackPane;
-
+    private KaylaEngine kayla;
     private Service<Void> postContentThread;
     private JFXDialog listeningDialog;
     private ObservableList<Node> speechBubbles = FXCollections.observableArrayList();
@@ -75,7 +76,7 @@ public class Controller implements Initializable {
                 return new Task<>() {
                     @Override
                     protected Void call() throws LineUnavailableException {
-                        KaylaEngine.sendVoice(audioSession.getStreamFromMic());
+                        kayla.sendVoice(audioSession.getStreamFromMic());
                         return null;
                     }
                 };
@@ -85,8 +86,8 @@ public class Controller implements Initializable {
             new RotateIn(loadingArcs).setCycleCount(1000).play(); //just set a high number for this, havent found a way to bind the actual data
         });
         postContentThread.setOnSucceeded(event -> {
-            speechBubbles.add(new Bubble(getContentResult().getInputTranscript(), SpeechDirection.RIGHT));
-            speechBubbles.add(new Bubble(getContentResult().getMessage(), SpeechDirection.LEFT));
+            speechBubbles.add(new Bubble(kayla.getContentResult().getInputTranscript(), SpeechDirection.RIGHT));
+            speechBubbles.add(new Bubble(kayla.getContentResult().getMessage(), SpeechDirection.LEFT));
         });
         audioSession.setDialog(listeningDialog);
 
@@ -120,8 +121,8 @@ public class Controller implements Initializable {
                     @Override
                     protected Void call() {
                         if (!content.isEmpty()) {
-                            KaylaEngine.sendText(content);
-                            updateMessage(getTextResult().getMessage());
+                            kayla.sendText(content);
+                            updateMessage(kayla.getTextResult().getMessage());
                         }
                         return null;
                     }
@@ -131,7 +132,7 @@ public class Controller implements Initializable {
         txtUserInput.clear();
         speechBubbles.add(new Bubble(content, SpeechDirection.RIGHT));
         postContentThread.setOnSucceeded(event -> {
-            speechBubbles.add(new Bubble(getTextResult().getMessage(), SpeechDirection.LEFT));
+            speechBubbles.add(new Bubble(kayla.getTextResult().getMessage(), SpeechDirection.LEFT));
             //node.textProperty().unbind();
         });
         //bind the sent message property to the UI
@@ -145,7 +146,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setFocusToRootContainer();
-        KaylaEngine.BuildKayla();
+        kayla = new KaylaEngine();
         initUI();
 /*        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.RIGHT));
 
