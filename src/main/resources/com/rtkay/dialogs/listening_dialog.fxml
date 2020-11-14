@@ -33,7 +33,7 @@
                   <Arc fill="#1f93ff00" layoutX="300.0" layoutY="66.0" length="180.0" radiusX="45.0" radiusY="45.0" startAngle="180.0" stroke="#70bbe9" strokeType="INSIDE" strokeWidth="5.0" AnchorPane.leftAnchor="255.0" AnchorPane.rightAnchor="255.0" />
                </children>
             </AnchorPane>
-            <FontIcon iconLiteral="fth-mic" iconSize="36" />
+            <FontIcon iconLiteral="enty-mic" iconSize="36" />
          </children>
       </StackPane>
    </children>

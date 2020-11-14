@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 import java.net.URL;
 
@@ -15,12 +17,17 @@ public class Launcher extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        JMetro jMetro = new JMetro(Style.DARK);
         URL resource = getClass().getResource("main.fxml");
         FXMLLoader loader = new FXMLLoader(resource);
         loader.setClassLoader(cachingClassLoader);
         Parent root = loader.load();
         stage.setTitle("Kayla");
-        stage.setScene(new Scene(root,410,710));
+        stage.setOpacity(0.85);
+        Scene scene = new Scene(root, 400, 800);
+        jMetro.setScene(scene);
+        jMetro.setAutomaticallyColorPanes(true);
+        stage.setScene(scene);
         stage.show();
     }
 

@@ -1,10 +1,11 @@
 package com.rtkay.kayla;
 
+import animatefx.animation.AnimationFX;
 import animatefx.animation.RotateIn;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXProgressBar;
 import com.rtkay.audio.StreamMicAudio;
 import com.rtkay.bot.KaylaEngine;
 import com.rtkay.utils.Bubble;
@@ -18,11 +19,15 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -38,13 +43,13 @@ import static com.rtkay.Launcher.cachingClassLoader;
 
 public class Controller implements Initializable {
     @FXML
+    private JFXProgressBar progressBar;
+    @FXML
     private ScrollPane scrollPane;
     @FXML
     private VBox chatBox;
     @FXML
-    private JFXTextField txtUserInput;
-    @FXML
-    private JFXButton btnNotifications;
+    private TextField txtUserInput;
     @FXML
     private StackPane rootStackPane;
     private KaylaEngine kayla;
@@ -53,7 +58,8 @@ public class Controller implements Initializable {
     private ObservableList<Node> speechBubbles = FXCollections.observableArrayList();
 
 
-    public void startListening(MouseEvent mouseEvent) throws IOException {
+    @FXML
+    private void startListening(Event mouseEvent) throws IOException {
         URL resource = getClass().getResource("/com/rtkay/dialogs/listening_dialog.fxml");
         FXMLLoader loader = new FXMLLoader(resource);
         loader.setClassLoader(cachingClassLoader);
@@ -82,35 +88,18 @@ public class Controller implements Initializable {
                 };
             }
         };
+        progressBar.visibleProperty().bind(postContentThread.runningProperty());
         postContentThread.setOnRunning(event -> {
-            new RotateIn(loadingArcs).setCycleCount(1000).play(); //just set a high number for this, havent found a way to bind the actual data
+            new RotateIn(loadingArcs).setCycleCount(AnimationFX.INDEFINITE).play();
         });
         postContentThread.setOnSucceeded(event -> {
             speechBubbles.add(new Bubble(kayla.getContentResult().getInputTranscript(), SpeechDirection.RIGHT));
             speechBubbles.add(new Bubble(kayla.getContentResult().getMessage(), SpeechDirection.LEFT));
         });
         audioSession.setDialog(listeningDialog);
-
-
-        //bind the sent message property to the UI
-        /*
-         *node.textProperty().bind(postTextThread.messageProperty)
-         * */
-
         postContentThread.restart();
 
     }
-
-    private void initFocus() {
-        final BooleanProperty firstTime = new SimpleBooleanProperty(true); // Variable to store the focus on stage load
-        btnNotifications.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue && firstTime.get()) {
-                rootStackPane.requestFocus(); // Delegate the focus to container
-                firstTime.setValue(false); // Variable value changed for future references
-            }
-        });
-    }
-
 
     public void sendText(ActionEvent actionEvent) {
         String content = txtUserInput.getText();
@@ -129,42 +118,29 @@ public class Controller implements Initializable {
                 };
             }
         };
-        txtUserInput.clear();
         speechBubbles.add(new Bubble(content, SpeechDirection.RIGHT));
-        postContentThread.setOnSucceeded(event -> {
-            speechBubbles.add(new Bubble(kayla.getTextResult().getMessage(), SpeechDirection.LEFT));
-            //node.textProperty().unbind();
+        progressBar.visibleProperty().bind(postContentThread.runningProperty());
+        progressBar.progressProperty().bind(postContentThread.progressProperty());
+        txtUserInput.clear();
+        postContentThread.messageProperty().addListener((observable, oldValue, newValue) -> {
+
+            speechBubbles.add(new Bubble(newValue, SpeechDirection.LEFT));
         });
         //bind the sent message property to the UI
-        /*
-         *node.textProperty().bind(postTextThread.messageProperty)
-         * */
         postContentThread.restart();
 
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setFocusToRootContainer();
         kayla = new KaylaEngine();
         initUI();
-/*        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.RIGHT));
-
-        for (int i = 0; i <100 ; i++) {
-            if(i%2==0){
-                speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce rhoncus quam mauris, a gravida enim tincidunt sit amet. ", SpeechDirection.RIGHT));
-
-            } else {
-                speechBubbles.add(new Bubble("In vel metus nec velit fermentum accumsan. Nulla aliquam nulla eu lectus molestie ullamcorper. Etiam ut eros eu augue tristique ultrices. Curabitur sit amet quam dignissim, tincidunt nisi nec, egestas eros. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.", SpeechDirection.LEFT));
-            }
-        }
-        speechBubbles.add(new Bubble("Lorem ipsum dolor sit amet.", SpeechDirection.CENTRE));*/
-
-
+     progressBar.setVisible(false);
     }
 
     private void initUI() {
-        chatBox.setSpacing(10);
+        scrollPane.setPadding(new Insets(10));
+        chatBox.setSpacing(16);
         Bindings.bindContentBidirectional(speechBubbles, chatBox.getChildren());
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -173,15 +149,10 @@ public class Controller implements Initializable {
         //Make the scroller scroll to the bottom when a new message is added
         speechBubbles.addListener((ListChangeListener<Node>) change -> {
             while (change.next()) {
-                if(change.wasAdded()){
+                if (change.wasAdded()) {
                     scrollPane.setVvalue(scrollPane.getVmax());
                 }
             }
         });
     }
-
-    private void setFocusToRootContainer() {
-        initFocus();
-    }
-
 }
