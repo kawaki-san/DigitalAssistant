@@ -9,21 +9,21 @@ You need an AWS account. Set up a bot in Amazon Lex. Configure your bot as neede
 
 ```java
 public class KaylaEngine{
-  private static final AmazonLexRuntime client = AmazonLexRuntimeClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
-  private static String contentType() {
+  private final AmazonLexRuntime client = AmazonLexRuntimeClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
+  private String contentType() {
         return "audio/x-l16; sample-rate=16000";
     }
 
-    private static String botName() {
+    private String botName() {
         return "Kayla";
     }
 
-    private static String botAlias() {
+    private String botAlias() {
         return "kayla";
     }
 
-    private static String userID() {
-        return "fromIDE";
+    private String userID() {
+        return "from me";
     }
 }
 
