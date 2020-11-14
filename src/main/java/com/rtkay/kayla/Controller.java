@@ -11,8 +11,6 @@ import com.rtkay.bot.KaylaEngine;
 import com.rtkay.utils.Bubble;
 import com.rtkay.utils.SpeechDirection;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -25,10 +23,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -150,7 +146,7 @@ public class Controller implements Initializable {
         speechBubbles.addListener((ListChangeListener<Node>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    scrollPane.setVvalue(scrollPane.getVmax());
+                    scrollPane.vvalueProperty().bind(chatBox.heightProperty());
                 }
             }
         });
